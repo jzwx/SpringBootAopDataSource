@@ -1,0 +1,2 @@
+# SpringBootAopDataSource
+SpringBoot通过AOP 实现多数据源切换个人demo
