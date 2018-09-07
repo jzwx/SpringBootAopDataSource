@@ -30,4 +30,6 @@ public interface IPersonRepository {
     Person selectByEvenUserId(int id);
 
     PageInfo<Person> queryPersonList(int pageNum, int pageSize);
+
+    PageInfo<Person> queryPersonList2(int pageNum, int pageSize);
 }

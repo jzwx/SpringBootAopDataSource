@@ -125,12 +125,14 @@
     </dependencies>
 
     <build>
+        <!-- 预定义执行的目标或者阶段，必须和命令行的参数相同。如：jar:jar或者clean install等等。例如：defaultGoal配置clean install ，在命令行输入mvn时会自动拼接成mvn clean install。偷懒的福音啊。-->
+        <defaultGoal>install</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-
+            <!-- maven-compiler-plugin插件可以指定项目源码的jdk版本，编译后的jdk版本，以及编码 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -138,10 +140,89 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+
+            <!-- maven-source-plugin提供项目自动将源码打包并发布的功能  生成sources源码包的插件-->
+            <!--
+            执行 mvn install，maven会自动将source install到repository 。
+            执行 mvn deploy，maven会自动将source deploy到remote-repository 。
+            执行 mvn source:jar，单独打包源码。
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sourccode</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- maven-dependency-plugin是处理与依赖相关的插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>instacode</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>sources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
-
+    <!-- 在需要上传jar资源的项目的pom.xml中增加<distributionManagement>配置，其中<id>设置需要跟.m2文件夹下的settings.xml中<servers>下的id相同。<url>需要指定nexus中配置的hosts Repository资源的地址。 需要发布jar资源到团队内部镜像服务器的项目的pom.xml配置<distributionManagement>增加snapshot的支持 -->
+    <!-- 通过maven 编译项目，并通过mvn deploy 来发布jar资源到团队内部的镜像服务器即可。 -->
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <name>Releases</name>
+            <url>http://192.168.1.152:8081/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>Snapshots</name>
+            <url>http://192.168.1.152:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+    <!-- 在pom.xml中repositories标签的作用是用来配置maven项目的远程仓库 -->
+    <!--  <repository>
+          <id>远程仓库唯一标识符</id>
+          <url>远程仓库的url</url>
+          </repository>
+          该配置与.m2文件夹下的settings.xml中<repositories>一致就可以
+      -->
+    <repositories>
+        <repository>
+            <id>releases</id>
+            <name>Releases</name>
+            <url>http://192.168.1.152:8081/repository/maven-releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>snapshots</id>
+            <name>Snapshots</name>
+            <url>http://192.168.1.152:8081/repository/maven-snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
 </project>

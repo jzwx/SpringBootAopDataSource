@@ -23,6 +23,10 @@ public class EncryptController {
     @Autowired
     private IPersonRepository   iPersonRepository;
 
+    /**
+     * 多数据源同时调用,获取数据
+     * @return
+     */
     @RequestMapping("/test")
     public @ResponseBody String test() {
         Person person = iPersonRepository.getPersonById();
@@ -36,6 +40,13 @@ public class EncryptController {
     public @ResponseBody JsonResponseData<? extends Object> query(@RequestParam(value = "pageNum", required = true) int pageNum,
                                                                   @RequestParam(value = "pageSize", required = true) int pageSize) {
         PageInfo<Person> personList = iPersonRepository.queryPersonList(pageNum, pageSize);
+        return new JsonResponseData<PageInfo<Person>>(Boolean.TRUE, "操作成功", 0, "", personList);
+    }
+
+    @RequestMapping(value = "/query2", method = RequestMethod.GET)
+    public @ResponseBody JsonResponseData<? extends Object> query2(@RequestParam(value = "pageNum", required = true) int pageNum,
+                                                                  @RequestParam(value = "pageSize", required = true) int pageSize) {
+        PageInfo<Person> personList = iPersonRepository.queryPersonList2(pageNum, pageSize);
         return new JsonResponseData<PageInfo<Person>>(Boolean.TRUE, "操作成功", 0, "", personList);
     }
 }

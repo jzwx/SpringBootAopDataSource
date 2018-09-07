@@ -1,11 +1,13 @@
 package com.wangxin.spring.boot.demo.repository.impl;
 
+import com.github.pagehelper.ISelect;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.wangxin.spring.boot.demo.dao.IPersonDao;
 import com.wangxin.spring.boot.demo.domain.Person;
 import com.wangxin.spring.boot.demo.repository.IPersonRepository;
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,5 +54,16 @@ public class IPersonRepositoryImpl implements IPersonRepository {
             return pageInfo;
         }
         return new PageInfo<>(new ArrayList<>());
+    }
+
+    @Override
+    public PageInfo<Person> queryPersonList2(int pageNum, int pageSize) {
+        PageInfo<Person> pageInfo = PageHelper.startPage(pageNum,pageSize).setOrderBy("id desc").doSelectPageInfo(new ISelect() {
+            @Override
+            public void doSelect() {
+                iPersonDao.queryPersonList();
+            }
+        });
+        return pageInfo;
     }
 }
